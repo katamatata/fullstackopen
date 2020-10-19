@@ -1,6 +1,6 @@
 # FullStackOpen 2020
 
-My solutions for excersises for [FullStackOpen course](https://fullstackopen.com/en/) from the University of Helsinki
+My solutions for exercises for [FullStackOpen course](https://fullstackopen.com/en/) from the University of Helsinki
 
 ## Description
 
