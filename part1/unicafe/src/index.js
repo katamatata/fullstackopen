@@ -13,6 +13,33 @@ const Display = ({ text, showClicks }) => (
   </div>
 );
 
+const Statistic = ({ countedClicks, total }) => {
+  const { good, neutral, bad } = countedClicks;
+  const averageFeedback = ((good - bad) / total).toFixed(2);
+  const positiveFeedback = ((good / total) * 100).toFixed(2) + "%";
+
+  if (total === 0) {
+    return (
+      <>
+        <Header text="Statistic:" />
+        <p>Be the first to leave a feedback</p>
+      </>
+    );
+  }
+
+  return (
+    <div>
+      <Header text="Statistic:" />
+      <Display showClicks={good} text="good:" />
+      <Display showClicks={neutral} text="neutral:" />
+      <Display showClicks={bad} text="bad:" />
+      <Display showClicks={total} text="total:" />
+      <Display showClicks={averageFeedback} text="average feedback:" />
+      <Display showClicks={positiveFeedback} text="positive feedback:" />
+    </div>
+  );
+};
+
 const App = () => {
   const [clicks, setClicks] = useState({ good: 0, neutral: 0, bad: 0 });
   const [totalClicks, setTotalClicks] = useState(0);
@@ -26,22 +53,13 @@ const App = () => {
     setTotalClicks(totalClicks + 1);
   };
 
-  const averageFeedback = ((clicks.good - clicks.bad) / totalClicks).toFixed(2);
-  const positiveFeedback = ((clicks.good / totalClicks) * 100).toFixed(2) + "%";
-
   return (
     <div>
       <Header text="Please leave your feedback" />
       <Button handleClick={() => onButtonClicked("good")} text="good" />
       <Button handleClick={() => onButtonClicked("neutral")} text="neutral" />
       <Button handleClick={() => onButtonClicked("bad")} text="bad" />
-      <Header text="Statistic:" />
-      <Display showClicks={clicks.good} text="good:" />
-      <Display showClicks={clicks.neutral} text="neutral:" />
-      <Display showClicks={clicks.bad} text="bad:" />
-      <Display showClicks={totalClicks} text="total:" />
-      <Display showClicks={averageFeedback} text="average feedback:" />
-      <Display showClicks={positiveFeedback} text="positive feedback:" />
+      <Statistic countedClicks={clicks} total={totalClicks} />
     </div>
   );
 };
