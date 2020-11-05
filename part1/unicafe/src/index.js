@@ -15,41 +15,33 @@ const Display = ({ text, showClicks }) => (
 
 const App = () => {
   const [clicks, setClicks] = useState({ good: 0, neutral: 0, bad: 0 });
+  const [totalClicks, setTotalClicks] = useState(0);
 
-  const onGoodClicked = () => {
-    const newClicks = {
+  const onButtonClicked = (count) => {
+    const newCount = {
       ...clicks,
-      good: clicks.good + 1
+      [count]: clicks[count] + 1
     };
-    setClicks(newClicks);
+    setClicks(newCount);
+    setTotalClicks(totalClicks + 1);
   };
 
-  const onNeutralClicked = () => {
-    const newClicks = {
-      ...clicks,
-      neutral: clicks.neutral + 1
-    };
-    setClicks(newClicks);
-  };
-
-  const onBadClicked = () => {
-    const newClicks = {
-      ...clicks,
-      bad: clicks.bad + 1
-    };
-    setClicks(newClicks);
-  };
+  const averageFeedback = ((clicks.good - clicks.bad) / totalClicks).toFixed(2);
+  const positiveFeedback = ((clicks.good / totalClicks) * 100).toFixed(2) + "%";
 
   return (
     <div>
       <Header text="Please leave your feedback" />
-      <Button handleClick={onGoodClicked} text="good" />
-      <Button handleClick={onNeutralClicked} text="neutral" />
-      <Button handleClick={onBadClicked} text="bad" />
+      <Button handleClick={() => onButtonClicked("good")} text="good" />
+      <Button handleClick={() => onButtonClicked("neutral")} text="neutral" />
+      <Button handleClick={() => onButtonClicked("bad")} text="bad" />
       <Header text="Statistic:" />
       <Display showClicks={clicks.good} text="good:" />
       <Display showClicks={clicks.neutral} text="neutral:" />
       <Display showClicks={clicks.bad} text="bad:" />
+      <Display showClicks={totalClicks} text="total:" />
+      <Display showClicks={averageFeedback} text="average feedback:" />
+      <Display showClicks={positiveFeedback} text="positive feedback:" />
     </div>
   );
 };
