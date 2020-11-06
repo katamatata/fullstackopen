@@ -7,35 +7,40 @@ const Button = ({ handleClick, text }) => (
   <button onClick={handleClick}>{text}</button>
 );
 
-const Display = ({ text, showClicks }) => (
-  <div>
-    {text} {showClicks}
-  </div>
+const TableRow = ({ text, value }) => (
+  <tr>
+    <td>{text}</td>
+    <td>{value}</td>
+  </tr>
 );
 
 const Statistic = ({ countedClicks, total }) => {
   const { good, neutral, bad } = countedClicks;
-  const averageFeedback = ((good - bad) / total).toFixed(2);
-  const positiveFeedback = ((good / total) * 100).toFixed(2) + "%";
+  const averageFeedback = ((good - bad) / total).toFixed(1);
+  const positiveFeedback = ((good / total) * 100).toFixed(1) + "%";
 
   if (total === 0) {
     return (
-      <>
+      <div>
         <Header text="Statistic:" />
         <p>Be the first to leave a feedback</p>
-      </>
+      </div>
     );
   }
 
   return (
     <div>
       <Header text="Statistic:" />
-      <Display showClicks={good} text="good:" />
-      <Display showClicks={neutral} text="neutral:" />
-      <Display showClicks={bad} text="bad:" />
-      <Display showClicks={total} text="total:" />
-      <Display showClicks={averageFeedback} text="average feedback:" />
-      <Display showClicks={positiveFeedback} text="positive feedback:" />
+      <table>
+        <tbody>
+          <TableRow value={good} text="good:" />
+          <TableRow value={neutral} text="neutral:" />
+          <TableRow value={bad} text="bad:" />
+          <TableRow value={total} text="total:" />
+          <TableRow value={averageFeedback} text="average feedback:" />
+          <TableRow value={positiveFeedback} text="positive feedback:" />
+        </tbody>
+      </table>
     </div>
   );
 };
