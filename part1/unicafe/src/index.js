@@ -19,28 +19,25 @@ const Statistic = ({ countedClicks, total }) => {
   const averageFeedback = ((good - bad) / total).toFixed(1);
   const positiveFeedback = ((good / total) * 100).toFixed(1) + "%";
 
-  if (total === 0) {
-    return (
-      <div>
-        <Header text="Statistic:" />
-        <p>Be the first to leave a feedback</p>
-      </div>
-    );
-  }
+  const isNoFeedbackGiven = total === 0;
 
   return (
     <div>
       <Header text="Statistic:" />
-      <table>
-        <tbody>
-          <TableRow value={good} text="good:" />
-          <TableRow value={neutral} text="neutral:" />
-          <TableRow value={bad} text="bad:" />
-          <TableRow value={total} text="total:" />
-          <TableRow value={averageFeedback} text="average feedback:" />
-          <TableRow value={positiveFeedback} text="positive feedback:" />
-        </tbody>
-      </table>
+      {isNoFeedbackGiven ? (
+        <p>Be the first to leave a feedback</p>
+      ) : (
+        <table>
+          <tbody>
+            <TableRow value={good} text="good:" />
+            <TableRow value={neutral} text="neutral:" />
+            <TableRow value={bad} text="bad:" />
+            <TableRow value={total} text="total:" />
+            <TableRow value={averageFeedback} text="average feedback:" />
+            <TableRow value={positiveFeedback} text="positive feedback:" />
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
