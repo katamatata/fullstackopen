@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom';
 
+const Header = ({ text }) => <h1>{text}</h1>;
+
 const Button = ({handleClick, text}) => (
   <button onClick={handleClick}>{text}</button>
 );
@@ -16,7 +18,7 @@ const App = (props) => {
     setSelected(random);
   };
 
-  const onVoteClicked = (selected) => {
+  const onVoteClicked = () => {
     const newVotes = [...votes];
     newVotes[selected] += 1;
     setVotes(newVotes);
@@ -24,10 +26,11 @@ const App = (props) => {
 
   return (
     <div>
+      <Header text="Anecdote of the day" />
       <p>{props.anecdotes[selected]}</p>
       <p>This anecdote has {votes[selected]} votes.</p>
       <Button handleClick={onNextClicked} text="Next anecdote" />
-      <Button handleClick={() => onVoteClicked(selected)} text="Vote" />
+      <Button handleClick={onVoteClicked} text="Vote" />
     </div>
   );
 };
