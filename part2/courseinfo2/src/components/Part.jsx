@@ -1,8 +1,8 @@
 import React from 'react';
 
-const Part = ({ text, exercises }) => (
+const Part = ({ text = '', exercises = 0 }) => (
   <p>
-    {text} {exercises}
+    {`${text}`} {exercises}
   </p>
 );
 

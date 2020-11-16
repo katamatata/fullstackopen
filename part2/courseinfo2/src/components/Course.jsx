@@ -1,17 +1,19 @@
-import React from "react";
+import React from 'react';
 
-import Header from "./Header";
-import Content from "./Content";
+import Title from './Title';
+import Header from './Header';
+import Content from './Content';
 
-const Course = ({ course }) => {
-  const {name, parts} = course;
+const Course = ({ title = '', courses = [] }) => (
+  <div>
+    <Title text={`${title}`} />
+    {courses.map(({ id, name, parts }) => (
+      <div key={id}>
+        <Header title={`${name}`} />
+        <Content parts={parts} />
+      </div>
+    ))}
+  </div>
+);
 
-  return (
-    <div>
-      <Header title={name} />
-      <Content content={parts}/>
-    </div>
-  )
-};
-
-export default Course; 
+export default Course;
