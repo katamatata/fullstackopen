@@ -4,7 +4,9 @@ const Persons = ({ persons, search }) => {
   const contactsToRender =
     search === ''
       ? persons
-      : persons.filter((person) => person.name.includes(search));
+      : persons.filter((person) =>
+          person.name.toLowerCase().includes(search.toLowerCase())
+        );
 
   return (
     <div>
