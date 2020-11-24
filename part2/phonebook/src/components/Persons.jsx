@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Persons = ({ persons, search }) => {
+const Persons = ({ persons, search, deleteContact }) => {
   const contactsToRender =
     search === ''
       ? persons
@@ -13,6 +13,7 @@ const Persons = ({ persons, search }) => {
       {contactsToRender.map((person) => (
         <p key={person.name}>
           {person.name} {person.number}
+          <button onClick={() => deleteContact(person.id)}>delete</button>
         </p>
       ))}
     </div>

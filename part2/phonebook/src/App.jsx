@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
 import Filter from './components/Filter';
+import contactService from './services/contacts';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -12,8 +12,8 @@ const App = () => {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons').then((response) => {
-      setPersons(response.data);
+    contactService.getAll().then((initialContacts) => {
+      setPersons(initialContacts);
     });
   }, []);
 
@@ -34,14 +34,19 @@ const App = () => {
         number: newNumber,
       };
 
-      axios
-        .post('http://localhost:3001/persons', nameObject)
-        .then((response) => {
-          console.log(response);
-          setPersons(persons.concat(response.data));
-          setNewName('');
-          setNewNumber('');
-        });
+      contactService.create(nameObject).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName('');
+        setNewNumber('');
+      });
+    }
+  };
+
+  const deletePerson = (id) => {
+    if (window.confirm(`Delete contact?`)) {
+      contactService.deleteContact(id).then(() => {
+        setPersons(persons.filter((person) => person.id !== id));
+      });
     }
   };
 
@@ -74,7 +79,7 @@ const App = () => {
       />
 
       <h3>Contacts</h3>
-      <Persons persons={persons} search={search} />
+      <Persons persons={persons} search={search} deleteContact={deletePerson} />
     </div>
   );
 };
