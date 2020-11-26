@@ -12,9 +12,14 @@ const App = () => {
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    contactService.getAll().then((initialContacts) => {
-      setPersons(initialContacts);
-    });
+    contactService
+      .getAll()
+      .then((initialContacts) => {
+        setPersons(initialContacts);
+      })
+      .catch((error) =>
+        alert('The connection with server was lost. Try again later.')
+      );
   }, []);
 
   const addPerson = (event) => {
@@ -27,7 +32,25 @@ const App = () => {
     } else if (newNumber === '') {
       alert('Please enter phone number!');
     } else if (isExist) {
-      alert(`${newName} is already added to contacts!`);
+      if (
+        window.confirm(
+          `${newName} is already added to contacts, replace the old number with a new one?`
+        )
+      ) {
+        const contact = persons.find((person) => person.name === newName);
+        const updatedContact = { ...contact, number: newNumber };
+        contactService
+          .update(contact.id, updatedContact)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== contact.id ? person : returnedPerson
+              )
+            );
+            setNewName('');
+            setNewNumber('');
+          });
+      }
     } else {
       const nameObject = {
         name: newName,
@@ -43,7 +66,8 @@ const App = () => {
   };
 
   const deletePerson = (id) => {
-    if (window.confirm(`Delete contact?`)) {
+    const contact = persons.find((person) => person.id === id);
+    if (window.confirm(`Delete ${contact.name}?`)) {
       contactService.deleteContact(id).then(() => {
         setPersons(persons.filter((person) => person.id !== id));
       });
