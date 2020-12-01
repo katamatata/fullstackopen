@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
 import Filter from './components/Filter';
+import Notification from './components/Notification';
 import contactService from './services/contacts';
 
 const App = () => {
@@ -10,6 +11,8 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [search, setSearch] = useState('');
+  const [isError, setIsError] = useState(false);
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     contactService
@@ -17,20 +20,27 @@ const App = () => {
       .then((initialContacts) => {
         setPersons(initialContacts);
       })
-      .catch((error) =>
-        alert('The connection with server was lost. Try again later.')
-      );
+      .catch((error) => {
+        setIsError(true);
+        setMessage('Connection with server is lost. Try again later.');
+        setTimeout(() => {
+          setMessage(null);
+        }, 3000);
+      });
   }, []);
 
   const addPerson = (event) => {
     event.preventDefault();
 
     const isExist = persons.map((person) => person.name).includes(newName);
+    const formIsNotComplete = newName === '' && newNumber === '';
 
-    if (newName === '') {
-      alert('Please enter name!');
-    } else if (newNumber === '') {
-      alert('Please enter phone number!');
+    if (formIsNotComplete) {
+      setIsError(true);
+      setMessage('Please complete form');
+      setTimeout(() => {
+        setMessage(null);
+      }, 3000);
     } else if (isExist) {
       if (
         window.confirm(
@@ -49,6 +59,20 @@ const App = () => {
             );
             setNewName('');
             setNewNumber('');
+            setIsError(false);
+            setMessage(`Contact ${newName} was updated.`);
+            setTimeout(() => {
+              setMessage(null);
+            }, 3000);
+          })
+          .catch((error) => {
+            setIsError(true);
+            setMessage(
+              `Information of ${contact.name} has already been deleted from server.`
+            );
+            setTimeout(() => {
+              setMessage(null);
+            }, 3000);
           });
       }
     } else {
@@ -61,6 +85,11 @@ const App = () => {
         setPersons(persons.concat(returnedPerson));
         setNewName('');
         setNewNumber('');
+        setIsError(false);
+        setMessage(`${newName} added to contacts.`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 3000);
       });
     }
   };
@@ -68,10 +97,24 @@ const App = () => {
   const deletePerson = (id) => {
     const contact = persons.find((person) => person.id === id);
     if (window.confirm(`Delete ${contact.name}?`)) {
-      contactService.deleteContact(id).then(() => {
-        setPersons(persons.filter((person) => person.id !== id));
-      });
+      contactService
+        .deleteContact(id)
+        .then(() => {
+          setPersons(persons.filter((person) => person.id !== id));
+        })
+        .catch((error) => {
+          setIsError(true);
+          setMessage(`${contact.name} has already been deleted from server.`);
+          setTimeout(() => {
+            setMessage(null);
+          }, 3000);
+        });
     }
+    setIsError(false);
+    setMessage(`${contact.name} deleted from contacts.`);
+    setTimeout(() => {
+      setMessage(null);
+    }, 3000);
   };
 
   const handleNameInputChange = (event) => {
@@ -89,6 +132,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification isError={isError} message={message} />
       <Filter
         searchInputValue={search}
         handleSearchChange={handleSearchInputChange}
