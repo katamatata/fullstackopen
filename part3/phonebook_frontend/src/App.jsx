@@ -101,6 +101,11 @@ const App = () => {
         .deleteContact(id)
         .then(() => {
           setPersons(persons.filter((person) => person.id !== id));
+          setIsError(false);
+          setMessage(`${contact.name} deleted from contacts.`);
+          setTimeout(() => {
+            setMessage(null);
+          }, 3000);
         })
         .catch((error) => {
           setIsError(true);
@@ -110,11 +115,6 @@ const App = () => {
           }, 3000);
         });
     }
-    setIsError(false);
-    setMessage(`${contact.name} deleted from contacts.`);
-    setTimeout(() => {
-      setMessage(null);
-    }, 3000);
   };
 
   const handleNameInputChange = (event) => {
