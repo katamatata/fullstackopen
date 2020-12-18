@@ -11,8 +11,22 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [search, setSearch] = useState('');
-  const [isError, setIsError] = useState(false);
-  const [message, setMessage] = useState(null);
+  const [notification, setNotification] = useState({
+    isError: false,
+    message: null,
+  });
+
+  const { isError, message } = notification;
+
+  const showNotification = (message = '', isError = false) => {
+    setNotification({
+      isError: isError,
+      message: message,
+    });
+    setTimeout(() => {
+      setNotification({ ...notification, message: null });
+    }, 3000);
+  };
 
   useEffect(() => {
     contactService
@@ -21,11 +35,10 @@ const App = () => {
         setPersons(initialContacts);
       })
       .catch((error) => {
-        setIsError(true);
-        setMessage('Connection with server is lost. Try again later.');
-        setTimeout(() => {
-          setMessage(null);
-        }, 3000);
+        showNotification(
+          'Connection with server is lost. Try again later.',
+          true
+        );
       });
   }, []);
 
@@ -33,14 +46,10 @@ const App = () => {
     event.preventDefault();
 
     const isExist = persons.map((person) => person.name).includes(newName);
-    const formIsNotComplete = newName === '' && newNumber === '';
+    const formIsNotComplete = newName === '' || newNumber === '';
 
     if (formIsNotComplete) {
-      setIsError(true);
-      setMessage('Please complete form');
-      setTimeout(() => {
-        setMessage(null);
-      }, 3000);
+      showNotification('Please complete form', true);
     } else if (isExist) {
       if (
         window.confirm(
@@ -59,20 +68,13 @@ const App = () => {
             );
             setNewName('');
             setNewNumber('');
-            setIsError(false);
-            setMessage(`Contact ${newName} was updated.`);
-            setTimeout(() => {
-              setMessage(null);
-            }, 3000);
+            showNotification(`Contact ${newName} was updated.`);
           })
           .catch((error) => {
-            setIsError(true);
-            setMessage(
-              `Information of ${contact.name} has already been deleted from server.`
+            showNotification(
+              `Information of ${contact.name} has already been deleted from server.`,
+              true
             );
-            setTimeout(() => {
-              setMessage(null);
-            }, 3000);
           });
       }
     } else {
@@ -85,11 +87,7 @@ const App = () => {
         setPersons(persons.concat(returnedPerson));
         setNewName('');
         setNewNumber('');
-        setIsError(false);
-        setMessage(`${newName} added to contacts.`);
-        setTimeout(() => {
-          setMessage(null);
-        }, 3000);
+        showNotification(`${newName} added to contacts.`);
       });
     }
   };
@@ -101,20 +99,15 @@ const App = () => {
         .deleteContact(id)
         .then(() => {
           setPersons(persons.filter((person) => person.id !== id));
+          showNotification(`${contact.name} deleted from contacts.`);
         })
         .catch((error) => {
-          setIsError(true);
-          setMessage(`${contact.name} has already been deleted from server.`);
-          setTimeout(() => {
-            setMessage(null);
-          }, 3000);
+          showNotification(
+            `${contact.name} has already been deleted from server.`,
+            true
+          );
         });
     }
-    setIsError(false);
-    setMessage(`${contact.name} deleted from contacts.`);
-    setTimeout(() => {
-      setMessage(null);
-    }, 3000);
   };
 
   const handleNameInputChange = (event) => {
