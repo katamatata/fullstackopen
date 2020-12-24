@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Country from './Country';
 
 const CountriesList = ({ filteredList }) => {
-  const [selected, setSelected] = useState({});
+  const [selected, setSelected] = useState(null);
   const [showSelected, setShowSelected] = useState(false);
 
   const onShowClicked = (id) => {
