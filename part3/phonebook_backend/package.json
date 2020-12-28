@@ -9,7 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:ui": "rm -rf build && cd ../phonebook_frontend && yarn run build --prod && cp -r build ../phonebook_backend/",
     "deploy": "git push heroku master",
-    "deploy:full": "yarn run build:ui && git add . && git commit -m uibuild && yarn run deploy",    
+    "deploy:full": "yarn run build:ui && git add . && git commit -m uibuild && yarn run deploy",
     "logs:prod": "heroku logs --tail"
   },
   "author": "",
@@ -17,9 +17,10 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "mongoose": "^5.11.8",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.6"
-  }   
+  }
 }
