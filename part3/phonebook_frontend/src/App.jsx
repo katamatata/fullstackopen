@@ -71,10 +71,8 @@ const App = () => {
             showNotification(`Contact ${newName} was updated.`);
           })
           .catch((error) => {
-            showNotification(
-              `Information of ${contact.name} has already been deleted from server.`,
-              true
-            );
+            console.log(error.response.data);
+            showNotification(`${error.response.data.error}`, true);
           });
       }
     } else {
@@ -83,12 +81,18 @@ const App = () => {
         number: newNumber,
       };
 
-      contactService.create(nameObject).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-        setNewName('');
-        setNewNumber('');
-        showNotification(`${newName} added to contacts.`);
-      });
+      contactService
+        .create(nameObject)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          setNewName('');
+          setNewNumber('');
+          showNotification(`${newName} added to contacts.`);
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+          showNotification(`${error.response.data.error}`, true);
+        });
     }
   };
 
