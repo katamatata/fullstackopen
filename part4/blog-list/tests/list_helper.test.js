@@ -43,8 +43,10 @@ describe('favourite blog', () => {
     });
   });
 
-  test('of empty array returns an error', () => {
-    expect(listHelper.favouriteBlog([])).toEqual({ error: 'List is empty' });
+  test('of empty array throws an error', () => {
+    expect(() => {
+      listHelper.favouriteBlog([]);
+    }).toThrow('List is empty');
   });
 });
 

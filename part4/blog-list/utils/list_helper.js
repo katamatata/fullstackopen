@@ -9,7 +9,7 @@ const totalLikes = (blogs) => {
 
 const favouriteBlog = (blogs) => {
   if (blogs.length === 0) {
-    return { error: 'List is empty' };
+    throw Error('List is empty');
   }
   const mostLikedBlog = blogs.reduce((mostLiked, blog) =>
     mostLiked.likes > blog.likes ? mostLiked : blog
