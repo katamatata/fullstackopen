@@ -9,23 +9,19 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response, next) => {
   const body = request.body;
 
-  if (!body.title) {
-    return response.status(400).json({ error: 'Title is required' });
+  if (!body.title && !body.url) {
+    return response.status(400).json({ error: 'Title and URL are required' });
   }
 
   const blog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
-    likes: body.likes,
+    likes: !body.likes ? 0 : body.likes,
   });
 
-  try {
-    const savedBlog = await blog.save();
-    response.json(savedBlog);
-  } catch (exception) {
-    next(exception);
-  }
+  const savedBlog = await blog.save();
+  response.json(savedBlog);
 });
 
 module.exports = blogsRouter;
