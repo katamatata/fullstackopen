@@ -13,87 +13,85 @@ beforeEach(async () => {
   await blogObj.save();
 });
 
-test('blogs are returned as json', async () => {
-  await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/);
+describe('when there is initially some blogs saved', () => {
+  test('blogs are returned as json', async () => {
+    await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+  });
+
+  test('all blogs are returned', async () => {
+    const response = await api.get('/api/blogs');
+    expect(response.body).toHaveLength(helper.initialBlogs.length);
+  });
+
+  test('a specific blog is within the returned blogs', async () => {
+    const response = await api.get('/api/blogs');
+    const contents = response.body.map((r) => r.title);
+    expect(contents).toContain('Test');
+  });
+
+  test('id of the blog is defined', async () => {
+    const response = await api.get('/api/blogs');
+    const contents = response.body.map((r) => r.id);
+    expect(contents).toBeDefined();
+  });
 });
 
-test('all blogs are returned', async () => {
-  const response = await api.get('/api/blogs');
-  expect(response.body).toHaveLength(helper.initialBlogs.length);
-});
+describe('adding of a new blog', () => {
+  test('succeeds with valid data', async () => {
+    const newBlog = {
+      title: 'New Blog',
+      author: 'New Author',
+      url: 'https://www.new-test.com/',
+      likes: '2',
+    };
 
-test('a specific blog is within the returned blogs', async () => {
-  const response = await api.get('/api/blogs');
-  const contents = response.body.map((r) => r.title);
-  expect(contents).toContain('Test');
-});
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
 
-test('a valid blog can be added', async () => {
-  const newBlog = {
-    title: 'New Blog',
-    author: 'New Author',
-    url: 'https://www.new-test.com/',
-    likes: '2',
-  };
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(200)
-    .expect('Content-Type', /application\/json/);
+    const contents = blogsAtEnd.map((b) => b.title);
+    expect(contents).toContain('New Blog');
+  });
 
-  const blogsAtEnd = await helper.blogsInDb();
-  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
+  test('if the likes property of blog is missing, it will default to the value 0', async () => {
+    const newBlog = {
+      title: 'Blog With No Likes',
+      author: 'New Author',
+      url: 'https://www.new-test.com/',
+    };
 
-  const contents = blogsAtEnd.map((b) => b.title);
-  expect(contents).toContain('New Blog');
-});
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
 
-// test('id of the blog is defined', async () => {
-//   const blogsAtEnd = await helper.blogsInDb();
-//   const contents = blogsAtEnd.map((b) => b.id);
-//   expect(contents).toBeDefined();
-// });
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
 
-test('id of the blog is defined', async () => {
-  const response = await api.get('/api/blogs');
-  const contents = response.body.map((r) => r.id);
-  expect(contents).toBeDefined();
-});
+    const contents = blogsAtEnd.map((b) => b.title);
+    expect(contents).toContain('Blog With No Likes');
+  });
 
-test('if the likes property of blog is missing, it will default to the value 0', async () => {
-  const newBlog = {
-    title: 'Blog With No Likes',
-    author: 'New Author',
-    url: 'https://www.new-test.com/',
-  };
+  test('fails with status code 400 if data is invalid', async () => {
+    const newBlog = {
+      author: 'New Author',
+      likes: '3',
+    };
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(200)
-    .expect('Content-Type', /application\/json/);
+    await api.post('/api/blogs').send(newBlog).expect(400);
 
-  const blogsAtEnd = await helper.blogsInDb();
-  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
-
-  const contents = blogsAtEnd.map((b) => b.title);
-  expect(contents).toContain('Blog With No Likes');
-});
-
-test('a blog without title and url is not added', async () => {
-  const newBlog = {
-    author: 'New Author',
-    likes: '3',
-  };
-
-  await api.post('/api/blogs').send(newBlog).expect(400);
-
-  const blogsAtEnd = await helper.blogsInDb();
-  expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
+  });
 });
 
 afterAll(() => {
