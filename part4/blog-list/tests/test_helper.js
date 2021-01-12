@@ -17,10 +17,10 @@ const initialBlogs = [
 
 const nonExistingId = async () => {
   const blog = new Blog({
-    title: 'New Blog',
+    title: 'Non-Existing Blog',
     author: 'New Author',
     url: 'https://www.new-test.com/',
-    likes: '1',
+    likes: '105',
   });
   await blog.save();
   await blog.remove();
