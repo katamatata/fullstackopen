@@ -109,8 +109,7 @@ describe('viewing a single blog', () => {
 
   test('fails with status code 404 if blog does not exist', async () => {
     const validNonExistingId = await helper.nonExistingId();
-
-    console.log(validNonExistingId);
+    // console.log(validNonExistingId);
 
     await api.get(`/api/blogs/${validNonExistingId}`).expect(404);
   });
@@ -119,6 +118,21 @@ describe('viewing a single blog', () => {
     const invalidId = '5ffdaa45521aba19d363ab5';
 
     await api.get(`/api/blogs/${invalidId}`).expect(400);
+  });
+});
+
+describe('deletion of one blog', () => {
+  test('succeeds with status code 204 if ID is valid', async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToDelete = blogsAtStart[0];
+
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
+
+    const contents = blogsAtEnd.map((r) => r.title);
+    expect(contents).not.toContain(blogToDelete.title);
   });
 });
 
