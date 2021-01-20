@@ -4,5 +4,6 @@ Content-Type: application/json
 {
   "title": "Test",
   "author": "Test",
-  "url": "https://www.test.com/"
+  "url": "https://www.test.com/",
+  "userId": "60056154b621c85a8fc2cd58"
 }

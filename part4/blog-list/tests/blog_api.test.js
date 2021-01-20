@@ -49,11 +49,15 @@ describe('when there is initially some blogs saved', () => {
 
   describe('adding a new blog', () => {
     test('succeeds with valid data', async () => {
+      const usersAtStart = await helper.usersInDb();
+      const user = usersAtStart[0];
+
       const newBlog = {
         title: 'New Blog',
         author: 'New Author',
         url: 'https://www.new-test.com/',
         likes: '2',
+        userId: user.id,
       };
 
       await api
@@ -70,10 +74,14 @@ describe('when there is initially some blogs saved', () => {
     });
 
     test('if the likes property of blog is missing, it will default to the value 0', async () => {
+      const usersAtStart = await helper.usersInDb();
+      const user = usersAtStart[0];
+
       const newBlog = {
         title: 'Blog With No Likes',
         author: 'New Author',
         url: 'https://www.new-test.com/',
+        userId: user.id,
       };
 
       await api
@@ -90,9 +98,13 @@ describe('when there is initially some blogs saved', () => {
     });
 
     test('fails with status code 400 if data is invalid', async () => {
+      const usersAtStart = await helper.usersInDb();
+      const user = usersAtStart[0];
+
       const newBlog = {
         author: 'New Author',
         likes: '3',
+        userId: user.id,
       };
 
       await api.post('/api/blogs').send(newBlog).expect(400);
