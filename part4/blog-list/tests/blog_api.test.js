@@ -3,7 +3,6 @@ const supertest = require('supertest');
 const app = require('../app');
 const api = supertest(app);
 const helper = require('./test_helper');
-const bcrypt = require('bcrypt');
 
 const Blog = require('../models/blog');
 
@@ -15,15 +14,15 @@ const Blog = require('../models/blog');
 //   await blogObj.save();
 // });
 
+beforeEach(async () => {
+  await Blog.deleteMany({});
+
+  const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
+  const promiseArray = blogObjects.map((blog) => blog.save());
+  await Promise.all(promiseArray);
+});
+
 describe('when there is initially some blogs saved', () => {
-  beforeEach(async () => {
-    await Blog.deleteMany({});
-
-    const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
-    const promiseArray = blogObjects.map((blog) => blog.save());
-    await Promise.all(promiseArray);
-  });
-
   test('blogs are returned as json', async () => {
     await api
       .get('/api/blogs')
@@ -47,19 +46,48 @@ describe('when there is initially some blogs saved', () => {
     const contents = response.body.map((r) => r.id);
     expect(contents).toBeDefined();
   });
+});
+
+describe('viewing a single blog', () => {
+  test('succeeds with a valid ID', async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToView = blogsAtStart[0];
+
+    const resultBlog = await api
+      .get(`/api/blogs/${blogToView.id}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    expect(resultBlog.body).toEqual(blogToView);
+  });
+
+  test('fails with status code 404 if blog does not exist', async () => {
+    const validNonExistingId = await helper.nonExistingId();
+    // console.log(validNonExistingId);
+
+    await api.get(`/api/blogs/${validNonExistingId}`).expect(404);
+  });
+
+  test('fails with status code 400 if ID is invalid', async () => {
+    const invalidId = '5ffdaa45521aba19d363ab5';
+
+    await api.get(`/api/blogs/${invalidId}`).expect(400);
+  });
+});
+
+describe('interactions with api with token authentication', () => {
+  let loggedInToken = '';
+
+  beforeEach(async () => {
+    const response = await api
+      .post('/api/login')
+      .send({ username: 'root', password: 'sekret' })
+      .expect(200);
+
+    loggedInToken = response.body.token;
+  });
 
   describe('adding a new blog', () => {
-    let loggedInToken = '';
-
-    beforeEach(async () => {
-      const response = await api
-        .post('/api/login')
-        .send({ username: 'root', password: 'sekret' })
-        .expect(200);
-
-      loggedInToken = response.body.token;
-    });
-
     test('succeeds with valid data and valid token', async () => {
       const newBlog = {
         title: 'New Blog',
@@ -137,47 +165,11 @@ describe('when there is initially some blogs saved', () => {
     });
   });
 
-  describe('viewing a single blog', () => {
-    test('succeeds with a valid ID', async () => {
-      const blogsAtStart = await helper.blogsInDb();
-      const blogToView = blogsAtStart[0];
-
-      const resultBlog = await api
-        .get(`/api/blogs/${blogToView.id}`)
-        .expect(200)
-        .expect('Content-Type', /application\/json/);
-
-      expect(resultBlog.body).toEqual(blogToView);
-    });
-
-    test('fails with status code 404 if blog does not exist', async () => {
-      const validNonExistingId = await helper.nonExistingId();
-      // console.log(validNonExistingId);
-
-      await api.get(`/api/blogs/${validNonExistingId}`).expect(404);
-    });
-
-    test('fails with status code 400 if ID is invalid', async () => {
-      const invalidId = '5ffdaa45521aba19d363ab5';
-
-      await api.get(`/api/blogs/${invalidId}`).expect(400);
-    });
-  });
-
   describe('deletion of one blog', () => {
-    let loggedInToken = '';
+    let blogToDelete = {};
 
     beforeEach(async () => {
-      const response = await api
-        .post('/api/login')
-        .send({ username: 'root', password: 'sekret' })
-        .expect(200);
-
-      loggedInToken = response.body.token;
-    });
-
-    test('succeeds with status code 204 if ID is valid and token provided', async () => {
-      const blogToDelete = {
+      const blog = {
         title: 'Blog to delete',
         author: 'Author',
         url: 'https://www.test.com/',
@@ -187,16 +179,18 @@ describe('when there is initially some blogs saved', () => {
       const response = await api
         .post('/api/blogs')
         .set('Authorization', `bearer ${loggedInToken}`)
-        .send(blogToDelete)
+        .send(blog)
         .expect(200)
         .expect('Content-Type', /application\/json/);
 
-      const blogToDeleteId = response.body.id;
+      blogToDelete = response.body;
+    });
 
+    test('succeeds with status code 204 if ID is valid and token provided', async () => {
       const blogsAtStart = await helper.blogsInDb();
 
       await api
-        .delete(`/api/blogs/${blogToDeleteId}`)
+        .delete(`/api/blogs/${blogToDelete.id}`)
         .set('Authorization', `bearer ${loggedInToken}`)
         .expect(204);
 
@@ -208,25 +202,9 @@ describe('when there is initially some blogs saved', () => {
     });
 
     test('fails with status code 401 if NO token provided', async () => {
-      const blogToDelete = {
-        title: 'Blog to delete',
-        author: 'Author',
-        url: 'https://www.test.com/',
-        likes: '2',
-      };
-
-      const response = await api
-        .post('/api/blogs')
-        .set('Authorization', `bearer ${loggedInToken}`)
-        .send(blogToDelete)
-        .expect(200)
-        .expect('Content-Type', /application\/json/);
-
-      const blogToDeleteId = response.body.id;
-
       const blogsAtStart = await helper.blogsInDb();
 
-      await api.delete(`/api/blogs/${blogToDeleteId}`).expect(401);
+      await api.delete(`/api/blogs/${blogToDelete.id}`).expect(401);
 
       const blogsAtEnd = await helper.blogsInDb();
       expect(blogsAtEnd).toHaveLength(blogsAtStart.length);
