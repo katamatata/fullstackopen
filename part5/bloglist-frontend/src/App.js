@@ -1,13 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import Blog from './components/Blog';
+
 import blogService from './services/blogs';
 import loginService from './services/login';
+
+import Blog from './components/Blog';
+import LoginForm from './components/LoginForm';
+import BlogForm from './components/BlogForm';
+import Notification from './components/Notification';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  useEffect(() => {
+    blogService.getAll().then((initialBlogs) => setBlogs(initialBlogs));
+  }, []);
+
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser');
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON);
+      setUser(user);
+      blogService.setToken(user.token);
+    }
+  }, []);
 
   const handleLogin = (event) => {
     event.preventDefault();
@@ -15,66 +34,70 @@ const App = () => {
 
     loginService
       .login({ username, password })
-      .then((returnedUser) => {
-        setUser(returnedUser);
+      .then((loggedUser) => {
+        window.localStorage.setItem(
+          'loggedBlogAppUser',
+          JSON.stringify(loggedUser)
+        );
+        blogService.setToken(loggedUser.token);
+        setUser(loggedUser);
         setUsername('');
         setPassword('');
       })
-      .catch((error) => console.log(error.response.data));
+      .catch((error) => {
+        setErrorMessage('Wrong username or password');
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 3000);
+      });
   };
 
-  useEffect(() => {
-    blogService.getAll().then((initialBlogs) => setBlogs(initialBlogs));
-  }, []);
+  const handleLogout = (event) => {
+    event.preventDefault();
 
-  const handleUsernameInputChange = (event) => {
-    setUsername(event.target.value);
+    window.localStorage.removeItem('loggedBlogAppUser');
+    setUser(null);
   };
 
-  const handlePasswordInputChange = (event) => {
-    setPassword(event.target.value);
+  const addBlog = (blogObject) => {
+    blogService
+      .create(blogObject)
+      .then((returnedBlog) => setBlogs(blogs.concat(returnedBlog)));
   };
-
-  if (user === null) {
-    return (
-      <div>
-        <h2>Log in to application</h2>
-        <form onSubmit={handleLogin}>
-          <div>
-            <label htmlFor='username'>Username:</label>
-            <input
-              type='text'
-              id='username'
-              name='Username'
-              value={username}
-              onChange={handleUsernameInputChange}
-            ></input>
-          </div>
-          <div>
-            <label htmlFor='password'>Password:</label>
-            <input
-              type='text'
-              id='password'
-              name='Password'
-              value={password}
-              onChange={handlePasswordInputChange}
-            ></input>
-          </div>
-          <div>
-            <button type='submit'>login</button>
-          </div>
-        </form>
-      </div>
-    );
-  }
 
   return (
     <div>
-      <h2>Blogs</h2>
-      <p>{user.name} is logged in</p>
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
+      <h1>Blogs App</h1>
+
+      <Notification message={errorMessage} />
+
+      {user === null ? (
+        <div>
+          <LoginForm
+            handleSubmit={handleLogin}
+            username={username}
+            password={password}
+            handleUsernameChange={({ target }) => setUsername(target.value)}
+            handlePasswordChange={({ target }) => setPassword(target.value)}
+          />
+        </div>
+      ) : (
+        <div>
+          <p>{user.name} is logged in</p>
+          <button type='submit' onClick={handleLogout}>
+            log out
+          </button>
+
+          <BlogForm createBlog={addBlog} />
+
+          <p>
+            <strong>Blogs:</strong>
+          </p>
+          {blogs.map((blog) => (
+            <Blog key={blog.id} blog={blog} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
