@@ -3,9 +3,9 @@ import React, { useState, useEffect } from 'react';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
-import Blog from './components/Blog';
 import LoginForm from './components/LoginForm';
 import BlogForm from './components/BlogForm';
+import BlogsList from './components/BlogsList';
 import Notification from './components/Notification';
 
 const App = () => {
@@ -13,7 +13,22 @@ const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [notification, setNotification] = useState({
+    isError: false,
+    message: null,
+  });
+
+  const { isError, message } = notification;
+
+  const showNotification = (message = '', isError = false) => {
+    setNotification({
+      isError: isError,
+      message: message,
+    });
+    setTimeout(() => {
+      setNotification({ ...notification, message: null });
+    }, 3000);
+  };
 
   useEffect(() => {
     blogService.getAll().then((initialBlogs) => setBlogs(initialBlogs));
@@ -30,6 +45,7 @@ const App = () => {
 
   const handleLogin = (event) => {
     event.preventDefault();
+
     console.log('logging in with', username, password);
 
     loginService
@@ -44,12 +60,7 @@ const App = () => {
         setUsername('');
         setPassword('');
       })
-      .catch((error) => {
-        setErrorMessage('Wrong username or password');
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 3000);
-      });
+      .catch((error) => showNotification('Wrong username or password', true));
   };
 
   const handleLogout = (event) => {
@@ -62,40 +73,38 @@ const App = () => {
   const addBlog = (blogObject) => {
     blogService
       .create(blogObject)
-      .then((returnedBlog) => setBlogs(blogs.concat(returnedBlog)));
+      .then((returnedBlog) => {
+        setBlogs(blogs.concat(returnedBlog));
+        showNotification(
+          `A new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+          false
+        );
+      })
+      .catch((error) => showNotification(`${error.response.data.error}`, true));
   };
 
   return (
     <div>
       <h1>Blogs App</h1>
 
-      <Notification message={errorMessage} />
+      <Notification isError={isError} message={message} />
 
       {user === null ? (
-        <div>
-          <LoginForm
-            handleSubmit={handleLogin}
-            username={username}
-            password={password}
-            handleUsernameChange={({ target }) => setUsername(target.value)}
-            handlePasswordChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
+        <LoginForm
+          handleSubmit={handleLogin}
+          username={username}
+          password={password}
+          handleUsernameChange={({ target }) => setUsername(target.value)}
+          handlePasswordChange={({ target }) => setPassword(target.value)}
+        />
       ) : (
         <div>
           <p>{user.name} is logged in</p>
           <button type='submit' onClick={handleLogout}>
             log out
           </button>
-
           <BlogForm createBlog={addBlog} />
-
-          <p>
-            <strong>Blogs:</strong>
-          </p>
-          {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
-          ))}
+          <BlogsList blogs={blogs} />
         </div>
       )}
     </div>

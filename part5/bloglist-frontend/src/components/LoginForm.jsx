@@ -7,7 +7,7 @@ const LoginForm = ({
   handleUsernameChange,
   handlePasswordChange,
 }) => (
-  <>
+  <div>
     <h2>Log in to application</h2>
 
     <form onSubmit={handleSubmit}>
@@ -25,7 +25,7 @@ const LoginForm = ({
       <div>
         <label htmlFor='password'>Password:</label>
         <input
-          type='text'
+          type='password'
           id='password'
           name='Password'
           value={password}
@@ -37,7 +37,7 @@ const LoginForm = ({
         <button type='submit'>login</button>
       </div>
     </form>
-  </>
+  </div>
 );
 
 export default LoginForm;
