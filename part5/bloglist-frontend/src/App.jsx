@@ -11,8 +11,6 @@ import Togglable from './components/Togglable';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
   const [notification, setNotification] = useState({
     isError: false,
@@ -46,11 +44,7 @@ const App = () => {
     }
   }, []);
 
-  const handleLogin = (event) => {
-    event.preventDefault();
-
-    console.log('logging in with', username, password);
-
+  const handleLogin = (username, password) => {
     loginService
       .login({ username, password })
       .then((loggedUser) => {
@@ -60,8 +54,6 @@ const App = () => {
         );
         blogService.setToken(loggedUser.token);
         setUser(loggedUser);
-        setUsername('');
-        setPassword('');
       })
       .catch((error) => showNotification('Wrong username or password', true));
   };
@@ -94,13 +86,7 @@ const App = () => {
       <Notification isError={isError} message={message} />
 
       {user === null ? (
-        <LoginForm
-          handleSubmit={handleLogin}
-          username={username}
-          password={password}
-          handleUsernameChange={({ target }) => setUsername(target.value)}
-          handlePasswordChange={({ target }) => setPassword(target.value)}
-        />
+        <LoginForm handleSubmit={handleLogin} />
       ) : (
         <div>
           <p>{user.name} is logged in</p>

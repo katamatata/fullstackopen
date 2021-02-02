@@ -1,43 +1,50 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-const LoginForm = ({
-  handleSubmit,
-  username,
-  password,
-  handleUsernameChange,
-  handlePasswordChange,
-}) => (
-  <div>
-    <h2>Log in to application</h2>
+const LoginForm = ({ handleSubmit }) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor='username'>Username:</label>
-        <input
-          type='text'
-          id='username'
-          name='Username'
-          value={username}
-          onChange={handleUsernameChange}
-        ></input>
-      </div>
+  const logIn = (event) => {
+    event.preventDefault();
 
-      <div>
-        <label htmlFor='password'>Password:</label>
-        <input
-          type='password'
-          id='password'
-          name='Password'
-          value={password}
-          onChange={handlePasswordChange}
-        ></input>
-      </div>
+    handleSubmit(username, password);
+    setUsername('');
+    setPassword('');
+  };
 
-      <div>
-        <button type='submit'>login</button>
-      </div>
-    </form>
-  </div>
-);
+  return (
+    <div>
+      <h2>Log in to application</h2>
+
+      <form onSubmit={logIn}>
+        <div>
+          <label htmlFor='username'>Username:</label>
+          <input
+            type='text'
+            id='username'
+            name='Username'
+            value={username}
+            onChange={({ target }) => setUsername(target.value)}
+          ></input>
+        </div>
+
+        <div>
+          <label htmlFor='password'>Password:</label>
+          <input
+            type='password'
+            id='password'
+            name='Password'
+            value={password}
+            onChange={({ target }) => setPassword(target.value)}
+          ></input>
+        </div>
+
+        <div>
+          <button type='submit'>login</button>
+        </div>
+      </form>
+    </div>
+  );
+};
 
 export default LoginForm;
