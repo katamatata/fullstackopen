@@ -2,18 +2,20 @@ import React, { useState } from 'react';
 
 import { BlogItem } from './BlogElements';
 
-export const Blog = ({ blog }) => {
+export const Blog = ({ blog, deleteBlog, loggedUser }) => {
   const [isHidden, setIsHidden] = useState(true);
 
   const toggleVisibility = () => {
     setIsHidden(!isHidden);
   };
 
+  const { title, url, likes, author, user } = blog;
+
   return (
     <div>
       {isHidden ? (
         <BlogItem>
-          {blog.title}
+          {title}
           <button onClick={toggleVisibility}>
             {isHidden ? 'view' : 'hide'}
           </button>
@@ -21,17 +23,21 @@ export const Blog = ({ blog }) => {
       ) : (
         <BlogItem>
           <div>
-            {blog.title}
+            {title}
             <button onClick={toggleVisibility}>
               {isHidden ? 'view' : 'hide'}
             </button>
           </div>
-          <div>{blog.url}</div>
+          <div>{url}</div>
           <div>
-            {blog.likes}
+            {likes}
             <button>like</button>
           </div>
-          <div>{blog.author}</div>
+          <div>{author}</div>
+
+          {loggedUser.username === user.username && (
+            <button onClick={() => deleteBlog(blog.id)}>delete</button>
+          )}
         </BlogItem>
       )}
     </div>

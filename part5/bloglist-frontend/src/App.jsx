@@ -79,6 +79,24 @@ const App = () => {
       .catch((error) => showNotification(`${error.response.data.error}`, true));
   };
 
+  const removeBlog = (id) => {
+    const blogToDelete = blogs.find((blog) => blog.id === id);
+
+    const confirmed = window.confirm(`Delete ${blogToDelete.title}?`);
+
+    if (confirmed) {
+      blogService
+        .deleteBlog(id)
+        .then(() => {
+          setBlogs(blogs.filter((blog) => blog.id !== id));
+          showNotification(`Blog ${blogToDelete.title} deleted`, false);
+        })
+        .catch((error) =>
+          showNotification(`${error.response.data.error}`, true)
+        );
+    }
+  };
+
   return (
     <div>
       <h1>Blogs App</h1>
@@ -96,7 +114,7 @@ const App = () => {
           <Togglable buttonLabel='new blog' ref={blogFormRef}>
             <BlogForm createBlog={addBlog} />
           </Togglable>
-          <BlogsList blogs={blogs} />
+          <BlogsList blogs={blogs} removeBlog={removeBlog} user={user} />
         </div>
       )}
     </div>
