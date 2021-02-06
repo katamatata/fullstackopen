@@ -9,7 +9,9 @@ export const Blog = ({ blog, deleteBlog, loggedUser }) => {
     setIsHidden(!isHidden);
   };
 
-  const { title, url, likes, author, user } = blog;
+  const { title, url, likes, author, user, id } = blog;
+
+  const blogCreator = loggedUser.username === user.username;
 
   return (
     <div>
@@ -35,8 +37,8 @@ export const Blog = ({ blog, deleteBlog, loggedUser }) => {
           </div>
           <div>{author}</div>
 
-          {loggedUser.username === user.username && (
-            <button onClick={() => deleteBlog(blog.id)}>delete</button>
+          {blogCreator && (
+            <button onClick={() => deleteBlog(id)}>delete</button>
           )}
         </BlogItem>
       )}
