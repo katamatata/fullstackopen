@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { ErrorMessage, SuccessMessage } from './NotificationElements';
 
@@ -14,4 +15,9 @@ export const Notification = ({ isError, message }) => {
       )}
     </>
   );
+};
+
+Notification.propTypes = {
+  isError: PropTypes.bool,
+  message: PropTypes.string,
 };

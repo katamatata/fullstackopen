@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 import { BlogItem } from './BlogElements';
 
@@ -44,4 +45,11 @@ export const Blog = ({ blog, updateBlog, deleteBlog, loggedUser }) => {
       )}
     </div>
   );
+};
+
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  updateBlog: PropTypes.func.isRequired,
+  deleteBlog: PropTypes.func.isRequired,
+  loggedUser: PropTypes.object.isRequired,
 };
