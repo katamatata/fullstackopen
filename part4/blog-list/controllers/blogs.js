@@ -57,9 +57,11 @@ blogsRouter.put('/:id', async (request, response) => {
     likes: body.likes,
   };
 
+  // populating user to be able to see the delete button after updating likes
   const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
     new: true,
-  });
+  }).populate('user', { username: 1, name: 1 });
+
   response.json(updatedBlog);
 });
 

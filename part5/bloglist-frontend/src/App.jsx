@@ -72,7 +72,23 @@ const App = () => {
       .then((returnedBlog) => {
         setBlogs(blogs.concat(returnedBlog));
         showNotification(
-          `A new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+          `A new blog '${returnedBlog.title}' by ${returnedBlog.author} added`,
+          false
+        );
+      })
+      .catch((error) => showNotification(`${error.response.data.error}`, true));
+  };
+
+  const updateBlog = (id) => {
+    const blog = blogs.find((blog) => blog.id === id);
+    const updatedBlog = { ...blog, likes: blog.likes + 1 };
+
+    blogService
+      .update(id, updatedBlog)
+      .then((returnedBlog) => {
+        setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)));
+        showNotification(
+          `A blog '${returnedBlog.title}' by ${returnedBlog.author} was updated`,
           false
         );
       })
@@ -82,14 +98,14 @@ const App = () => {
   const removeBlog = (id) => {
     const blogToDelete = blogs.find((blog) => blog.id === id);
 
-    const confirmed = window.confirm(`Delete ${blogToDelete.title}?`);
+    const confirmed = window.confirm(`Delete blog '${blogToDelete.title}'?`);
 
     if (confirmed) {
       blogService
         .deleteBlog(id)
         .then(() => {
           setBlogs(blogs.filter((blog) => blog.id !== id));
-          showNotification(`Blog ${blogToDelete.title} deleted`, false);
+          showNotification(`Blog '${blogToDelete.title}' deleted`, false);
         })
         .catch((error) =>
           showNotification(`${error.response.data.error}`, true)
@@ -114,7 +130,12 @@ const App = () => {
           <Togglable buttonLabel='new blog' ref={blogFormRef}>
             <BlogForm createBlog={addBlog} />
           </Togglable>
-          <BlogsList blogs={blogs} removeBlog={removeBlog} user={user} />
+          <BlogsList
+            blogs={blogs}
+            updateBlog={updateBlog}
+            removeBlog={removeBlog}
+            user={user}
+          />
         </div>
       )}
     </div>

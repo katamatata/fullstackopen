@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { BlogItem } from './BlogElements';
 
-export const Blog = ({ blog, deleteBlog, loggedUser }) => {
+export const Blog = ({ blog, updateBlog, deleteBlog, loggedUser }) => {
   const [isHidden, setIsHidden] = useState(true);
 
   const toggleVisibility = () => {
@@ -33,7 +33,7 @@ export const Blog = ({ blog, deleteBlog, loggedUser }) => {
           <div>{url}</div>
           <div>
             {likes}
-            <button>like</button>
+            <button onClick={() => updateBlog(id)}>like</button>
           </div>
           <div>{author}</div>
 

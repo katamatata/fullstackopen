@@ -22,15 +22,19 @@ const create = (newObject) => {
   return request.then((response) => response.data);
 };
 
+const update = (id, newObject) => {
+  const request = axios.put(`${baseUrl}/${id}`, newObject);
+  return request.then((response) => response.data);
+};
+
 const deleteBlog = (id) => {
   const config = {
     headers: { Authorization: token },
   };
-  const url = `${baseUrl}/${id}`;
 
-  return axios.delete(url, config);
+  return axios.delete(`${baseUrl}/${id}`, config);
 };
 
-const blogService = { getAll, create, deleteBlog, setToken };
+const blogService = { getAll, create, update, deleteBlog, setToken };
 
 export default blogService;
