@@ -15,16 +15,16 @@ export const Blog = ({ blog, updateBlog, deleteBlog, loggedUser }) => {
   const blogCreator = loggedUser.username === user.username;
 
   return (
-    <div>
+    <div data-testid='blog'>
       {isHidden ? (
         <BlogItem>
-          {title}
+          {title} by {author}
           <button onClick={toggleVisibility}>
             {isHidden ? 'view' : 'hide'}
           </button>
         </BlogItem>
       ) : (
-        <BlogItem>
+        <BlogItem data-testid='details'>
           <div>
             {title}
             <button onClick={toggleVisibility}>
