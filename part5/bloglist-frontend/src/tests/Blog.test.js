@@ -60,13 +60,22 @@ describe('testing <Blog />', () => {
     const view = component.getByText('view');
     fireEvent.click(view);
 
-    const details = component.getByTestId('details');
-    expect(details).toBeDefined();
-
     const like = component.getByText('like');
     fireEvent.click(like);
     fireEvent.click(like);
 
     expect(mockHandler.mock.calls).toHaveLength(2);
+  });
+
+  test('clicking the `hide` button hides the details of the blog post', () => {
+    const view = component.getByText('view');
+    fireEvent.click(view);
+
+    const hide = component.getByText('hide');
+    fireEvent.click(hide);
+
+    const blog = component.getByTestId('blog');
+    expect(blog).not.toHaveTextContent('Test url');
+    expect(blog).not.toHaveTextContent('0');
   });
 });
