@@ -9,7 +9,7 @@ export const Notification = ({ isError, message }) => {
   return (
     <>
       {isError ? (
-        <ErrorMessage>{message}</ErrorMessage>
+        <ErrorMessage id='error'>{message}</ErrorMessage>
       ) : (
         <SuccessMessage>{message}</SuccessMessage>
       )}
