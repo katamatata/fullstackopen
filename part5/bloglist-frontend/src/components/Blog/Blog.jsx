@@ -33,7 +33,7 @@ export const Blog = ({ blog, updateBlog, deleteBlog, loggedUser }) => {
           </div>
           <div>{url}</div>
           <div>
-            {likes}
+            Likes: {likes}
             <button onClick={() => updateBlog(id)}>like</button>
           </div>
           <div>{author}</div>
