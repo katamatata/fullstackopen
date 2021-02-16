@@ -4,12 +4,11 @@ import PropTypes from 'prop-types';
 import Blog from './Blog';
 
 const BlogsList = ({ blogs, updateBlog, removeBlog, user }) => {
-  const sortedByLikes = blogs.sort((a, b) => a.likes - b.likes);
+  const sortedByLikes = blogs.sort((a, b) => b.likes - a.likes);
 
   return (
-    <div>
+    <div id='blogs-list'>
       <h2>Blogs:</h2>
-
       {sortedByLikes.map((blog) => (
         <Blog
           key={blog.id}

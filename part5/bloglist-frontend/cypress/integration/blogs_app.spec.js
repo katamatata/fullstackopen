@@ -2,14 +2,11 @@ describe('Blog app', function () {
   beforeEach(function () {
     cy.request('POST', 'http://localhost:3003/api/testing/reset');
 
-    const user = {
+    cy.createUser({
       name: 'Jimmy',
       username: 'jimmyju',
       password: 'enterthispassword',
-    };
-
-    cy.request('POST', 'http://localhost:3003/api/users', user);
-    cy.visit('http://localhost:3000');
+    });
   });
 
   it('Login form is shown', function () {
@@ -56,40 +53,73 @@ describe('Blog app', function () {
       cy.contains('A blog created by cypress');
     });
 
-    describe.only('and some blogs exist', function () {
+    describe('and some blogs exist', function () {
       beforeEach(function () {
         cy.createBlog({
           title: 'First blog',
-          author: 'cypress',
+          author: 'Jimmy',
           url: 'https://www.cypress.io/',
+          likes: 1,
         });
         cy.createBlog({
           title: 'Second blog',
-          author: 'cypress',
+          author: 'Jimmy',
           url: 'https://www.cypress.io/',
+          likes: 2,
         });
         cy.createBlog({
           title: 'Third blog',
-          author: 'cypress',
+          author: 'Jimmy',
           url: 'https://www.cypress.io/',
+          likes: 3,
         });
       });
 
-      it('one of those can be liked', function () {
-        // or
-        // cy.contains('Second blog').contains('view').click();
-        // cy.contains('like').click();
-        // cy.contains('Likes: 1');
-
-        // or
-        // cy.contains('Second blog').parent().find('button').click();
-        // cy.contains('Second blog').parent().find('#like-button').click();
-        // cy.contains('Second blog').parent().should('contain', 'Likes: 1');
-
-        cy.contains('Second blog').parent().as('theBlog');
+      it('blog can be liked', function () {
+        cy.contains('Second blog').as('theBlog');
         cy.get('@theBlog').contains('view').click();
         cy.get('@theBlog').contains('like').click();
-        cy.get('@theBlog').should('contain', 'Likes: 1');
+
+        cy.get('@theBlog').should('contain', 'Likes: 3');
+      });
+
+      it('blog can be deleted by creator', function () {
+        cy.contains('First blog').as('theBlog');
+        cy.get('@theBlog').contains('view').click();
+        cy.get('@theBlog').contains('delete').click();
+
+        cy.get('#blogs-list').should('not.contain', 'theBlog');
+      });
+
+      it('other users cannot delete the blog', function () {
+        cy.contains('log out').click();
+
+        cy.createUser({
+          name: 'Karo',
+          username: 'karrotti',
+          password: 'karkarro',
+        });
+
+        cy.login({ username: 'karrotti', password: 'karkarro' });
+
+        cy.contains('Third blog').as('theBlog');
+        cy.get('@theBlog').contains('view').click();
+        cy.contains('delete').should('not.exist');
+      });
+
+      it('blogs are ordered by the most liked being first', function () {
+        cy.get('#blogs-list').find('div').find('div').as('theBlogsList');
+        cy.get('@theBlogsList').should('have.length', 3);
+
+        cy.get('@theBlogsList')
+          .find('button')
+          .then((buttons) => cy.wrap(buttons.click()));
+
+        cy.get('@theBlogsList').then((blogs) => {
+          cy.wrap(blogs[0]).should('contain', 'Likes: 3');
+          cy.wrap(blogs[1]).should('contain', 'Likes: 2');
+          cy.wrap(blogs[2]).should('contain', 'Likes: 1');
+        });
       });
     });
   });
