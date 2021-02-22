@@ -5,32 +5,73 @@ import reducer from './reducer';
 
 const store = createStore(reducer);
 
+const Header = ({ text }) => {
+  return <h1>{text}</h1>;
+};
+
+const Button = ({ handleClick, text }) => {
+  return <button onClick={handleClick}>{text}</button>;
+};
+
+const TableRow = ({ text, value }) => {
+  return (
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+    </tr>
+  );
+};
+
+const Statistic = () => {
+  const countedGood = store.getState().good;
+  const countedNeutral = store.getState().ok;
+  const countedBad = store.getState().bad;
+
+  const total = countedGood + countedNeutral + countedBad;
+
+  const averageFeedback = ((countedGood - countedBad) / total).toFixed(1);
+
+  const positiveFeedback = ((countedGood / total) * 100).toFixed(1) + '%';
+
+  const isNoFeedbackGiven = total === 0;
+
+  return (
+    <div>
+      {isNoFeedbackGiven ? (
+        <p>Be the first to leave a feedback.</p>
+      ) : (
+        <div>
+          <Header text='Statistic:' />
+
+          <table>
+            <tbody>
+              <TableRow text='good:' value={countedGood} />
+              <TableRow text='neutral:' value={countedNeutral} />
+              <TableRow text='bad:' value={countedBad} />
+              <TableRow text='total:' value={total} />
+              <TableRow text='average feedback:' value={averageFeedback} />
+              <TableRow text='positive feedback:' value={positiveFeedback} />
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const App = () => {
-  const good = () => {
-    store.dispatch({ type: 'GOOD' });
-  };
-
-  const neutral = () => {
-    store.dispatch({ type: 'OK' });
-  };
-
-  const bad = () => {
-    store.dispatch({ type: 'BAD' });
-  };
-
-  const zero = () => {
-    store.dispatch({ type: 'ZERO' });
+  const onButtonClicked = (action) => {
+    store.dispatch({ type: action });
   };
 
   return (
     <div>
-      <button onClick={good}>good</button>
-      <button onClick={neutral}>neutral</button>
-      <button onClick={bad}>bad</button>
-      <button onClick={zero}>reset stats</button>
-      <div>good {store.getState().good}</div>
-      <div>neutral {store.getState().ok}</div>
-      <div>bad {store.getState().bad}</div>
+      <Header text='Please leave your feedback' />
+      <Button handleClick={() => onButtonClicked('GOOD')} text='good' />
+      <Button handleClick={() => onButtonClicked('OK')} text='neutral' />
+      <Button handleClick={() => onButtonClicked('BAD')} text='bad' />
+      <Button handleClick={() => onButtonClicked('ZERO')} text='reset stats' />
+      <Statistic />
     </div>
   );
 };
