@@ -1,6 +1,8 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
+import { addGood, addNeutral, addBad, resetStats } from '../actions';
+
 const Button = ({ handleClick, text }) => (
   <button onClick={handleClick}>{text}</button>
 );
@@ -8,15 +10,28 @@ const Button = ({ handleClick, text }) => (
 const Buttons = () => {
   const dispatch = useDispatch();
 
-  const onButtonClicked = (action) => {
-    dispatch({ type: action });
+  const handleAddGood = () => {
+    dispatch(addGood);
   };
+
+  const handleAddNeutral = () => {
+    dispatch(addNeutral);
+  };
+
+  const handleAddBad = () => {
+    dispatch(addBad);
+  };
+
+  const handleResetStats = () => {
+    dispatch(resetStats);
+  };
+
   return (
     <div>
-      <Button handleClick={() => onButtonClicked('GOOD')} text='good' />
-      <Button handleClick={() => onButtonClicked('OK')} text='neutral' />
-      <Button handleClick={() => onButtonClicked('BAD')} text='bad' />
-      <Button handleClick={() => onButtonClicked('ZERO')} text='reset stats' />
+      <Button handleClick={handleAddGood} text='good' />
+      <Button handleClick={handleAddNeutral} text='neutral' />
+      <Button handleClick={handleAddBad} text='bad' />
+      <Button handleClick={handleResetStats} text='reset stats' />
     </div>
   );
 };

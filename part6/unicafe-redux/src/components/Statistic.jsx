@@ -1,6 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
+import { getGood, getNeutral, getBad } from '../selectors';
+
 import Header from './Header';
 
 const TableRow = ({ text, value }) => {
@@ -13,9 +15,11 @@ const TableRow = ({ text, value }) => {
 };
 
 const Statistic = () => {
-  const { good, ok, bad } = useSelector((state) => state);
+  const good = useSelector(getGood);
+  const neutral = useSelector(getNeutral);
+  const bad = useSelector(getBad);
 
-  const total = good + ok + bad;
+  const total = good + neutral + bad;
   const averageFeedback = ((good - bad) / total).toFixed(1);
   const positiveFeedback = ((good / total) * 100).toFixed(1) + '%';
 
@@ -32,7 +36,7 @@ const Statistic = () => {
           <table>
             <tbody>
               <TableRow text='good:' value={good} />
-              <TableRow text='neutral:' value={ok} />
+              <TableRow text='neutral:' value={neutral} />
               <TableRow text='bad:' value={bad} />
               <TableRow text='total:' value={total} />
               <TableRow text='average feedback:' value={averageFeedback} />
