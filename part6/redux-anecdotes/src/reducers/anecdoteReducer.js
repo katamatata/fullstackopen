@@ -1,3 +1,5 @@
+import { ADD_VOTE } from '../actions/actionTypes';
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -20,10 +22,21 @@ const asObject = (anecdote) => {
 const initialState = anecdotesAtStart.map(asObject);
 
 const reducer = (state = initialState, action) => {
-  console.log('state now: ', state);
-  console.log('action', action);
-
-  return state;
+  switch (action.type) {
+    case ADD_VOTE: {
+      const id = action.data.id;
+      const anecdoteToVoteFor = state.find((anecdote) => anecdote.id === id);
+      const votedAnecdote = {
+        ...anecdoteToVoteFor,
+        votes: anecdoteToVoteFor.votes + 1,
+      };
+      return state.map((anecdote) =>
+        anecdote.id !== id ? anecdote : votedAnecdote
+      );
+    }
+    default:
+      return state;
+  }
 };
 
 export default reducer;
