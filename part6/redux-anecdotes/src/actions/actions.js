@@ -1,6 +1,6 @@
 import { ADD_VOTE, NEW_ANECDOTE } from '../actions/actionTypes';
 
-import { getId } from '../reducers/anecdoteReducer';
+import { getId } from '../utils';
 
 export const addVote = (id) => {
   return {

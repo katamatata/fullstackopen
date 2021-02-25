@@ -1,5 +1,7 @@
 import { ADD_VOTE, NEW_ANECDOTE } from '../actions/actionTypes';
 
+import { asObject } from '../utils';
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -8,16 +10,6 @@ const anecdotesAtStart = [
   'Premature optimization is the root of all evil.',
   'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
 ];
-
-export const getId = () => Number((100000 * Math.random()).toFixed(0));
-
-const asObject = (anecdote) => {
-  return {
-    content: anecdote,
-    id: getId(),
-    votes: 0,
-  };
-};
 
 const initialState = anecdotesAtStart.map(asObject);
 
