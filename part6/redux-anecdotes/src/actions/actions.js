@@ -1,4 +1,9 @@
-import { ADD_VOTE, NEW_ANECDOTE } from '../actions/actionTypes';
+import {
+  ADD_VOTE,
+  NEW_ANECDOTE,
+  SHOW_NOTIFICATION,
+  HIDE_NOTIFICATION,
+} from '../actions/actionTypes';
 
 import { getId } from '../utils';
 
@@ -18,4 +23,15 @@ export const createAnecdote = (content) => {
       votes: 0,
     },
   };
+};
+
+export const showNotification = (message) => {
+  return {
+    type: SHOW_NOTIFICATION,
+    data: { message },
+  };
+};
+
+export const hideNotification = {
+  type: HIDE_NOTIFICATION,
 };

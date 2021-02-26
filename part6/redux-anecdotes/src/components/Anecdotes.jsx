@@ -1,7 +1,11 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { addVote } from '../actions/actions';
+import {
+  addVote,
+  showNotification,
+  hideNotification,
+} from '../actions/actions';
 
 const Anecdote = ({ anecdote, handleClick }) => {
   return (
@@ -21,8 +25,12 @@ const Anecdotes = () => {
 
   const sortedByVotes = anecdotes.sort((a, b) => b.votes - a.votes);
 
-  const vote = (id) => {
+  const vote = (id, content) => {
     dispatch(addVote(id));
+    dispatch(showNotification(`You voted for '${content}'`));
+    setTimeout(() => {
+      dispatch(hideNotification);
+    }, 3000);
   };
 
   return (
@@ -31,7 +39,7 @@ const Anecdotes = () => {
         <Anecdote
           key={anecdote.id}
           anecdote={anecdote}
-          handleClick={() => vote(anecdote.id)}
+          handleClick={() => vote(anecdote.id, anecdote.content)}
         />
       ))}
     </div>
