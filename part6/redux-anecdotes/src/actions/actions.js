@@ -3,6 +3,7 @@ import {
   NEW_ANECDOTE,
   SHOW_NOTIFICATION,
   HIDE_NOTIFICATION,
+  SET_FILTER,
 } from '../actions/actionTypes';
 
 import { getId } from '../utils';
@@ -34,4 +35,11 @@ export const showNotification = (message) => {
 
 export const hideNotification = {
   type: HIDE_NOTIFICATION,
+};
+
+export const filterChange = (filter) => {
+  return {
+    type: SET_FILTER,
+    filter,
+  };
 };
