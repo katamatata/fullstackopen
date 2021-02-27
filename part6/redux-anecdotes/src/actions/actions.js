@@ -1,12 +1,20 @@
 import {
   ADD_VOTE,
   NEW_ANECDOTE,
+  INIT_ANECDOTES,
   SHOW_NOTIFICATION,
   HIDE_NOTIFICATION,
   SET_FILTER,
 } from '../actions/actionTypes';
 
 import { getId } from '../utils';
+
+export const initializeAnecdotes = (anecdote) => {
+  return {
+    type: INIT_ANECDOTES,
+    data: anecdote,
+  };
+};
 
 export const addVote = (id) => {
   return {
