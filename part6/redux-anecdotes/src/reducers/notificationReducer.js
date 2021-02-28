@@ -1,13 +1,11 @@
 import { HIDE_NOTIFICATION, SHOW_NOTIFICATION } from '../actions/actionTypes';
 
-const initialState = {
-  message: '',
-};
+const initialState = '';
 
 const notificationReducer = (state = initialState, action) => {
   switch (action.type) {
     case SHOW_NOTIFICATION:
-      return action.data;
+      return action.message;
     case HIDE_NOTIFICATION:
       return initialState;
     default:

@@ -18,10 +18,14 @@ export const initializeAnecdotes = () => {
   };
 };
 
-export const addVote = (id) => {
-  return {
-    type: ADD_VOTE,
-    data: { id },
+export const addVote = (anecdote) => {
+  return async (dispatch) => {
+    const anecdoteToUpdate = { ...anecdote, votes: anecdote.votes + 1 };
+    const updatedAnecdote = await anecdoteService.update(anecdoteToUpdate);
+    dispatch({
+      type: ADD_VOTE,
+      data: updatedAnecdote,
+    });
   };
 };
 
@@ -38,7 +42,7 @@ export const createAnecdote = (content) => {
 export const showNotification = (message) => {
   return {
     type: SHOW_NOTIFICATION,
-    data: { message },
+    message,
   };
 };
 

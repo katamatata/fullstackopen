@@ -8,11 +8,7 @@ const anecdoteReducer = (state = initialState, action) => {
       return action.data;
     case ADD_VOTE: {
       const id = action.data.id;
-      const anecdoteToVoteFor = state.find((anecdote) => anecdote.id === id);
-      const votedAnecdote = {
-        ...anecdoteToVoteFor,
-        votes: anecdoteToVoteFor.votes + 1,
-      };
+      const votedAnecdote = action.data;
       return state.map((anecdote) =>
         anecdote.id !== id ? anecdote : votedAnecdote
       );

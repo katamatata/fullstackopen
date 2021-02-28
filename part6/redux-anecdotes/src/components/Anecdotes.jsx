@@ -36,9 +36,9 @@ const Anecdotes = () => {
 
   const sortedByVotes = anecdotes.sort((a, b) => b.votes - a.votes);
 
-  const vote = (id, content) => {
-    dispatch(addVote(id));
-    dispatch(showNotification(`You voted for '${content}'`));
+  const vote = (anecdote) => {
+    dispatch(addVote(anecdote));
+    dispatch(showNotification(`You voted for '${anecdote.content}'`));
     setTimeout(() => {
       dispatch(hideNotification);
     }, 3000);
@@ -50,7 +50,7 @@ const Anecdotes = () => {
         <Anecdote
           key={anecdote.id}
           anecdote={anecdote}
-          handleClick={() => vote(anecdote.id, anecdote.content)}
+          handleClick={() => vote(anecdote)}
         />
       ))}
     </div>
