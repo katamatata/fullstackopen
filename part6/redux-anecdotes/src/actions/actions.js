@@ -39,15 +39,22 @@ export const createAnecdote = (content) => {
   };
 };
 
-export const showNotification = (message) => {
-  return {
-    type: SHOW_NOTIFICATION,
-    message,
-  };
-};
+let timeoutID;
 
-export const hideNotification = {
-  type: HIDE_NOTIFICATION,
+export const showNotificationWithTimeout = (message, time) => {
+  return async (dispatch) => {
+    clearTimeout(timeoutID);
+    dispatch({
+      type: SHOW_NOTIFICATION,
+      message,
+    });
+
+    timeoutID = setTimeout(() => {
+      dispatch({
+        type: HIDE_NOTIFICATION,
+      });
+    }, time * 1000);
+  };
 };
 
 export const filterChange = (filter) => {

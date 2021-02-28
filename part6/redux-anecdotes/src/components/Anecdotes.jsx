@@ -1,11 +1,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import {
-  addVote,
-  showNotification,
-  hideNotification,
-} from '../actions/actions';
+import { addVote, showNotificationWithTimeout } from '../actions/actions';
 
 const Anecdote = ({ anecdote, handleClick }) => {
   return (
@@ -38,10 +34,9 @@ const Anecdotes = () => {
 
   const vote = (anecdote) => {
     dispatch(addVote(anecdote));
-    dispatch(showNotification(`You voted for '${anecdote.content}'`));
-    setTimeout(() => {
-      dispatch(hideNotification);
-    }, 3000);
+    dispatch(
+      showNotificationWithTimeout(`You voted for '${anecdote.content}'`, 5)
+    );
   };
 
   return (

@@ -3,8 +3,7 @@ import { useDispatch } from 'react-redux';
 
 import {
   createAnecdote,
-  showNotification,
-  hideNotification,
+  showNotificationWithTimeout,
 } from '../actions/actions';
 
 import Subtitle from './Subtitle';
@@ -17,10 +16,7 @@ const NewAnecdote = () => {
     const content = event.target.anecdote.value;
     event.target.anecdote.value = '';
     dispatch(createAnecdote(content));
-    dispatch(showNotification(`You added anecdote '${content}'`));
-    setTimeout(() => {
-      dispatch(hideNotification);
-    }, 3000);
+    dispatch(showNotificationWithTimeout(`You added anecdote '${content}'`, 5));
   };
 
   return (
