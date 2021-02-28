@@ -7,7 +7,7 @@ import {
   SET_FILTER,
 } from '../actions/actionTypes';
 
-import { getId } from '../utils';
+// import { getId } from '../utils';
 
 export const initializeAnecdotes = (anecdote) => {
   return {
@@ -23,14 +23,10 @@ export const addVote = (id) => {
   };
 };
 
-export const createAnecdote = (content) => {
+export const createAnecdote = (data) => {
   return {
     type: NEW_ANECDOTE,
-    data: {
-      content,
-      id: getId(),
-      votes: 0,
-    },
+    data,
   };
 };
 
