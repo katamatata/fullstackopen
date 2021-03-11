@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Menu = () => {
   const padding = {
@@ -6,15 +7,15 @@ const Menu = () => {
   };
   return (
     <div>
-      <a href='#' style={padding}>
+      <Link to='/' style={padding}>
         anecdotes
-      </a>
-      <a href='#' style={padding}>
+      </Link>
+      <Link to='/new' style={padding}>
         create new
-      </a>
-      <a href='#' style={padding}>
+      </Link>
+      <Link to='/about' style={padding}>
         about
-      </a>
+      </Link>
     </div>
   );
 };
