@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { Switch, Route, useRouteMatch } from 'react-router-dom';
 
 import Menu from './components/Menu';
 import AnecdoteList from './components/AnecdoteList';
 import Anecdote from './components/Anecdote';
 import About from './components/About';
 import CreateNew from './components/CreateNew';
+import Notification from './components/Notification';
 import Footer from './components/Footer';
 
 const App = () => {
+  const [notification, setNotification] = useState('');
   const [anecdotes, setAnecdotes] = useState([
     {
       content: 'If it hurts, do it more often',
@@ -26,11 +28,15 @@ const App = () => {
     },
   ]);
 
-  const [notification, setNotification] = useState('');
+  const showNotification = (message) => {
+    setNotification(message);
+    setTimeout(() => setNotification(null), 3000);
+  };
 
   const addNew = (anecdote) => {
     anecdote.id = (Math.random() * 10000).toFixed(0);
     setAnecdotes(anecdotes.concat(anecdote));
+    showNotification(`You have added '${anecdote.content}'`);
   };
 
   const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
@@ -46,13 +52,19 @@ const App = () => {
     setAnecdotes(anecdotes.map((a) => (a.id === id ? voted : a)));
   };
 
+  const match = useRouteMatch('/anecdotes/:id');
+  const anecdote = match
+    ? anecdotes.find((anecdote) => anecdote.id === match.params.id)
+    : null;
+
   return (
-    <Router>
+    <div>
       <h1>Software anecdotes</h1>
       <Menu />
+      <Notification notification={notification} />
       <Switch>
         <Route path='/anecdotes/:id'>
-          <Anecdote anecdotes={anecdotes} />
+          <Anecdote anecdote={anecdote} />
         </Route>
         <Route path='/about'>
           <About />
@@ -65,7 +77,7 @@ const App = () => {
         </Route>
       </Switch>
       <Footer />
-    </Router>
+    </div>
   );
 };
 
