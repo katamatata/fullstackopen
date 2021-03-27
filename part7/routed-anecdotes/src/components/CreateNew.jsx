@@ -4,20 +4,27 @@ import { useHistory } from 'react-router-dom';
 import { useField } from '../hooks';
 
 const CreateNew = (props) => {
-  const content = useField();
-  const author = useField();
-  const info = useField();
+  const { reset: resetContent, ...restContent } = useField();
+  const { reset: resetAuthor, ...restAuthor } = useField();
+  const { reset: resetInfo, ...restInfo } = useField();
   const history = useHistory();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const newAnecdote = {
-      content: content.value,
-      author: author.value,
-      info: info.value,
+      content: restContent.value,
+      author: restAuthor.value,
+      info: restInfo.value,
     };
     props.addNew({ ...newAnecdote, votes: 0 });
     history.push('/');
+  };
+
+  const handleReset = (e) => {
+    e.preventDefault();
+    resetContent();
+    resetAuthor();
+    resetInfo();
   };
 
   return (
@@ -26,17 +33,18 @@ const CreateNew = (props) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input {...content} />
+          <input {...restContent} />
         </div>
         <div>
           author
-          <input {...author} />
+          <input {...restAuthor} />
         </div>
         <div>
           url for more info
-          <input {...info} />
+          <input {...restInfo} />
         </div>
-        <button>create</button>
+        <button type='submit'>create</button>
+        <button onClick={handleReset}>reset</button>
       </form>
     </div>
   );
